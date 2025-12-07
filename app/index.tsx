@@ -84,7 +84,7 @@ export default function Index() {
     >
         {pokemon.map((pokemon) => (
             <Link key={pokemon.name}
-                  href={`/details`}
+                  href={{ pathname: "/details" , params: { name: pokemon.name } }}
                   style={{
                       // @ts-ignore
                       backgroundColor: colorByType[pokemon.types[0].type.name] + 50,

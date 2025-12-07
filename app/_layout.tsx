@@ -13,6 +13,11 @@ export default function RootLayout() {
           name="details" // matches the file name
           options={{
               title: 'Details',
+              headerBackButtonDisplayMode: 'minimal',
+              // presentation: 'modal',
+              // sheetAllowedDetents: [0.3, 0.5, 0.7],
+              // sheetGrabberVisible: true,
+              // headerShown: false,
           }}
       />
     </Stack>
