@@ -42,7 +42,6 @@ export default function Index() {
 
     console.log(JSON.stringify(pokemon[0], null, 2))
 
-
     useEffect(() => {
         // fetch pokemon
         fetchPokemon()
