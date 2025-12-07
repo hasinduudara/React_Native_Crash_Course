@@ -1,5 +1,6 @@
-import { Image, ScrollView, Text, View, StyleSheet } from "react-native";
+import { Image, ScrollView, Text, View, StyleSheet, Pressable } from "react-native";
 import {useEffect, useState} from "react";
+import {Link} from "expo-router";
 
 interface Pokemon {
     name: string;
@@ -82,29 +83,34 @@ export default function Index() {
         }}
     >
         {pokemon.map((pokemon) => (
-            <View key={pokemon.name} style={{
-                // @ts-ignore
-                backgroundColor: colorByType[pokemon.types[0].type.name] + 50,
-                padding: 20,
-                borderRadius: 20,
-            }}>
-                <Text style={styles.name}>{pokemon.name}</Text>
+            <Link key={pokemon.name}
+                  href={`/details`}
+                  style={{
+                      // @ts-ignore
+                      backgroundColor: colorByType[pokemon.types[0].type.name] + 50,
+                      padding: 20,
+                      borderRadius: 20,
+                  }}
+            >
+                <View>
+                    <Text style={styles.name}>{pokemon.name}</Text>
 
-                <Text style={styles.type}>{pokemon.types[0].type.name}</Text>
+                    <Text style={styles.type}>{pokemon.types[0].type.name}</Text>
 
-                <View style={{
-                    flexDirection: 'row',
-                }}>
-                    <Image
-                        source={{ uri: pokemon.image }}
-                        style={{ width: 150, height: 150 }}
-                    />
-                    <Image
-                        source={{ uri: pokemon.imageBack }}
-                        style={{ width: 150, height: 150 }}
-                    />
+                    <View style={{
+                        flexDirection: 'row',
+                    }}>
+                        <Image
+                            source={{ uri: pokemon.image }}
+                            style={{ width: 150, height: 150 }}
+                        />
+                        <Image
+                            source={{ uri: pokemon.imageBack }}
+                            style={{ width: 150, height: 150 }}
+                        />
+                    </View>
                 </View>
-            </View>
+            </Link>
         ))}
     </ScrollView>
   );
