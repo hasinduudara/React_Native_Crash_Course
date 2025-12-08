@@ -44,7 +44,7 @@ const colorByType = {
 // We use your REAL ID when building the app for release.
 const adUnitId = __DEV__
     ? TestIds.REWARDED
-    : 'ca-app-pub-7029214467070565/9377570217';
+    : 'ca-app-pub-7029214467070565/4784004497';
 
 export default function Index() {
     const [pokemon, setPokemon] = useState<Pokemon[]>([]);
