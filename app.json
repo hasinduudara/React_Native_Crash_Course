@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-first-app",
-    "slug": "my-first-app",
+    "name": "Pokemon Rewards",
+    "slug": "pokemon-rewards",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,13 +13,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#161819",
+        "foregroundImage": "./assets/images/pikachu.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.hasinduudara.myfirstapp"
     },
     "web": {
       "output": "static",
@@ -38,11 +37,24 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7029214467070565~8034351349",
+          "iosAppId": "ca-app-pub-7029214467070565~8034351349"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "409707f8-305a-4ea3-bc4b-ed19ab6978bf"
+      }
     }
   }
 }

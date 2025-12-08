@@ -1,6 +1,8 @@
 import { Image, ScrollView, Text, View, StyleSheet, Pressable } from "react-native";
-import {useEffect, useState} from "react";
-import {Link} from "expo-router";
+import { useEffect, useState } from "react";
+import { useRouter } from "expo-router"; // Removed Link, added useRouter
+import { SafeAreaView } from "react-native-safe-area-context";
+import { TestIds, useRewardedAd } from 'react-native-google-mobile-ads';
 
 interface Pokemon {
     name: string;
@@ -37,82 +39,122 @@ const colorByType = {
     fairy: '#D685AD',
 }
 
+// 1. Setup the Ad Unit ID
+// We use the Test ID when in development mode (Expo Go or Dev Client) to avoid bans.
+// We use your REAL ID when building the app for release.
+const adUnitId = __DEV__
+    ? TestIds.REWARDED
+    : 'ca-app-pub-7029214467070565/9377570217';
+
 export default function Index() {
     const [pokemon, setPokemon] = useState<Pokemon[]>([]);
+    const router = useRouter(); // Use router for manual navigation
 
-    console.log(JSON.stringify(pokemon[0], null, 2))
+    // 2. Initialize the Ad
+    const { isLoaded, isClosed, load, show } = useRewardedAd(adUnitId, {
+        requestNonPersonalizedAdsOnly: true,
+    });
+
+    // Keep track of where the user wanted to go
+    const [selectedPokemonName, setSelectedPokemonName] = useState<string | null>(null);
 
     useEffect(() => {
-        // fetch pokemon
-        fetchPokemon()
-    }, []);
+        fetchPokemon();
+        load(); // Start loading an ad as soon as the screen opens
+    }, [load]);
+
+    // 3. Watch for the Ad to Close
+    useEffect(() => {
+        if (isClosed && selectedPokemonName) {
+            // The user finished the ad, now we navigate
+            router.push({ pathname: "/details", params: { name: selectedPokemonName } });
+
+            // Clean up and load a NEW ad for the next click
+            setSelectedPokemonName(null);
+            load();
+        }
+    }, [isClosed, selectedPokemonName, load]);
 
     async function fetchPokemon() {
         try {
-            const response = await fetch(
-                "https://pokeapi.co/api/v2/pokemon/?limit=10"
-            );
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=10");
             const data = await response.json();
 
-            // set detailed info for each pokemon in parallel
             const datailedPokemon = await Promise.all(
                 data.results.map(async (pokemon: any) => {
                     const res = await fetch(pokemon.url);
                     const details = await res.json();
                     return {
                         name: pokemon.name,
-                        image: details.sprites.front_default, // main sprite
+                        image: details.sprites.front_default,
                         imageBack: details.sprites.back_default,
                         types: details.types,
                     };
                 })
             );
-
             setPokemon(datailedPokemon);
         } catch (error) {
             console.log(error)
         }
     }
 
-  return (
-    <ScrollView
-        contentContainerStyle={{
-            gap: 16,
-            padding: 16,
-        }}
-    >
-        {pokemon.map((pokemon) => (
-            <Link key={pokemon.name}
-                  href={{ pathname: "/details" , params: { name: pokemon.name } }}
-                  style={{
-                      // @ts-ignore
-                      backgroundColor: colorByType[pokemon.types[0].type.name] + 50,
-                      padding: 20,
-                      borderRadius: 20,
-                  }}
+    // 4. Handle the Card Click
+    const handlePress = (name: string) => {
+        setSelectedPokemonName(name);
+
+        if (isLoaded) {
+            // Ad is ready? Show it! (Navigation happens in the useEffect above)
+            show();
+        } else {
+            // Ad failed or internet slow? Don't block the user, just navigate.
+            router.push({ pathname: "/details", params: { name } });
+        }
+    }
+
+    return (
+        <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+            <ScrollView
+                contentContainerStyle={{
+                    gap: 16,
+                    padding: 16,
+                }}
             >
-                <View>
-                    <Text style={styles.name}>{pokemon.name}</Text>
+                {pokemon.map((pokemon) => (
+                    <Pressable
+                        key={pokemon.name}
+                        onPress={() => handlePress(pokemon.name)}
+                        style={({ pressed }) => ({
+                            // @ts-ignore
+                            backgroundColor: colorByType[pokemon.types[0].type.name] + 50,
+                            padding: 20,
+                            borderRadius: 20,
+                            // Optional: add a visual effect when touching
+                            opacity: pressed ? 0.8 : 1
+                        })}
+                    >
+                        <View>
+                            <Text style={styles.name}>{pokemon.name}</Text>
 
-                    <Text style={styles.type}>{pokemon.types[0].type.name}</Text>
+                            <Text style={styles.type}>{pokemon.types[0].type.name}</Text>
 
-                    <View style={{
-                        flexDirection: 'row',
-                    }}>
-                        <Image
-                            source={{ uri: pokemon.image }}
-                            style={{ width: 150, height: 150 }}
-                        />
-                        <Image
-                            source={{ uri: pokemon.imageBack }}
-                            style={{ width: 150, height: 150 }}
-                        />
-                    </View>
-                </View>
-            </Link>
-        ))}
-    </ScrollView>
-  );
+                            <View style={{
+                                flexDirection: 'row',
+                            }}>
+                                <Image
+                                    source={{ uri: pokemon.image }}
+                                    style={{ width: 150, height: 150 }}
+                                />
+                                <Image
+                                    source={{ uri: pokemon.imageBack }}
+                                    style={{ width: 150, height: 150 }}
+                                />
+                            </View>
+                        </View>
+                    </Pressable>
+                ))}
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({

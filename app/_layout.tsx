@@ -1,25 +1,26 @@
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
-  return (
-    <Stack>
-      <Stack.Screen
-          name="index" // matches the file name
-          options={{
-              title: 'Home',
-          }}
-      />
-      <Stack.Screen
-          name="details" // matches the file name
-          options={{
-              title: 'Details',
-              headerBackButtonDisplayMode: 'minimal',
-              // presentation: 'modal',
-              // sheetAllowedDetents: [0.3, 0.5, 0.7],
-              // sheetGrabberVisible: true,
-              // headerShown: false,
-          }}
-      />
-    </Stack>
-  );
+    return (
+        <>
+            <StatusBar style="dark" />
+
+            <Stack>
+                <Stack.Screen
+                    name="index"
+                    options={{
+                        title: 'Home',
+                    }}
+                />
+                <Stack.Screen
+                    name="details"
+                    options={{
+                        title: 'Details',
+                        headerBackButtonDisplayMode: 'minimal',
+                    }}
+                />
+            </Stack>
+        </>
+    );
 }
